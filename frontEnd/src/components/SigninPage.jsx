@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import { loginUser, clearError } from '../store/slices/authSlice';
+import { loginUser, clearError, checkAuthStatus } from '../store/slices/authSlice';
 
 import axios  from 'axios';
 const SigninPage = () => {
@@ -29,16 +29,15 @@ const handleSubmit = async (e) => {
 
   try {
     const resultAction = await dispatch(loginUser({ ...formData, rememberMe }));
-
     if (loginUser.fulfilled.match(resultAction)) {
       const userRole = resultAction.payload.user.role; // ✅ Corrected line
 
       if (userRole === 'buyer') {
-        navigate('/dashboard');
+        navigate('/buyer/dashboard');
       } else if (userRole === 'seller') {
-        navigate('/seller-dashboard');
+        navigate('/seller/dashboard');
       } else if (userRole === 'admin') {
-        navigate('/admin');
+        navigate('/admin/dashboard');
       } else {
         console.warn('Unknown role:', userRole);
       }

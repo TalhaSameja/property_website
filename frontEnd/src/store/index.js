@@ -1,13 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
+import propertyReducer from './slices/propertySlice';
+import authReducer from './slices/authSlice'; // assuming you're using auth
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
+    property: propertyReducer,
     auth: authReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
-  devTools: process.env.NODE_ENV !== 'production',
 });
+
+export default store;

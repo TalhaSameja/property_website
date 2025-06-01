@@ -16,7 +16,7 @@ import upload from '../middlewares/multer.middleware.js';
 const router = express.Router();
 
 // Create new property (seller only)
-router.post('/', protect, upload.array('images', 5), createProperty);
+router.post('/add-new', protect, upload.array('images', 5), createProperty);
 
 // Get all properties
 router.get('/', getAllProperties);

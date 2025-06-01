@@ -1,72 +1,15 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 import { HomeIcon, BuildingOfficeIcon, HeartIcon, UserCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-
+import {useSelector} from "react-redux"
 const HomePage = () => {
-  const featuredProperties = [
-    // Add your property data here
-    { id: 1, title: "Modern Downtown Apartment", price: "$599,000", beds: 3, baths: 2, sqft: 1800, location: "City Center" },
-    { id: 2, title: "Suburban Family Home", price: "$799,000", beds: 4, baths: 3, sqft: 2500, location: "Green Valley" },
-    { id: 3, title: "Luxury Penthouse", price: "$1,299,000", beds: 3, baths: 3, sqft: 3200, location: "Downtown Heights" },
-  ];
-
+  const {properties} = useSelector(state=> state.property)
+  const featuredProperties = properties || [];
+ 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
-      <nav className="bg-white/90 backdrop-blur-md shadow-sm fixed w-full z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            {/* Logo */}
-            <NavLink to="/" className="flex items-center space-x-2">
-              <BuildingOfficeIcon className="h-8 w-8 text-emerald-600" />
-              <span className="text-2xl font-bold text-gray-900">EstatePro</span>
-            </NavLink>
-
-            {/* Navigation Links */}
-            <div className="hidden md:flex items-center space-x-8">
-              <NavLink 
-                to="/" 
-                className={({ isActive }) => `px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'text-emerald-600' : 'text-gray-500 hover:text-emerald-600'}`}
-              >
-                Home
-              </NavLink>
-              <NavLink 
-                to="/properties" 
-                className={({ isActive }) => `px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'text-emerald-600' : 'text-gray-500 hover:text-emerald-600'}`}
-              >
-                Properties
-              </NavLink>
-              <NavLink 
-                to="/about" 
-                className={({ isActive }) => `px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'text-emerald-600' : 'text-gray-500 hover:text-emerald-600'}`}
-              >
-                About
-              </NavLink>
-              <NavLink 
-                to="/contact" 
-                className={({ isActive }) => `px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'text-emerald-600' : 'text-gray-500 hover:text-emerald-600'}`}
-              >
-                Contact
-              </NavLink>
-            </div>
-
-            {/* Auth Buttons */}
-            <div className="flex items-center space-x-4">
-              <NavLink
-                to="/login"
-                className="px-4 py-2 text-gray-600 hover:text-emerald-600 font-medium"
-              >
-                Sign In
-              </NavLink>
-              <NavLink
-                to="/signup"
-                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-              >
-                Sign Up
-              </NavLink>
-            </div>
-          </div>
-        </div>
-      </nav>
+     
 
       {/* Hero Section */}
       <div className="relative pt-16 pb-32">
@@ -113,46 +56,44 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-
+      {featuredProperties.length === 0 && <h2 className="text-3xl font-bold text-gray-900 mb-8">No properties Available</h2>}
+        
       {/* Featured Properties */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-3xl font-bold text-gray-900 mb-8">Featured Properties</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {featuredProperties.map((property) => (
-            <div key={property.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow">
-              <img
-                src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf"
-                alt="Property"
-                className="h-48 w-full object-cover"
-              />
-              <div className="p-6">
-                <div className="flex justify-between items-start">
-                  <h3 className="text-xl font-semibold text-gray-900">{property.title}</h3>
-                  <button className="text-gray-400 hover:text-emerald-600">
-                    <HeartIcon className="h-6 w-6" />
-                  </button>
-                </div>
-                <p className="mt-2 text-2xl font-bold text-emerald-600">{property.price}</p>
-                <div className="mt-4 grid grid-cols-3 gap-4 text-sm text-gray-600">
-                  <div>
-                    <span className="font-medium">{property.beds}</span> Beds
-                  </div>
-                  <div>
-                    <span className="font-medium">{property.baths}</span> Baths
-                  </div>
-                  <div>
-                    <span className="font-medium">{property.sqft}</span> sqft
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center text-sm text-gray-500">
-                  <BuildingOfficeIcon className="h-5 w-5 mr-2" />
-                  {property.location}
-                </div>
-                <button className="mt-6 w-full bg-emerald-600 text-white py-2 rounded-md hover:bg-emerald-700 transition-colors">
-                  View Details
-                </button>
-              </div>
-            </div>
+             <Link
+                          to={`/properties/${property._id}`}
+                          key={property._id}
+                          className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                        >
+                          <div className="p-4">
+                            <div className="relative mb-4">
+                              <img
+                                src={property.images && property.images.length > 0 ? property.images[0] : "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf"}
+                                alt="Property"
+                                className="w-full h-48 object-cover rounded-lg"
+                              />
+            
+                              <button className="absolute top-2 right-2 p-2 bg-white/90 rounded-full">
+                                <HeartIcon className="h-6 w-6 text-gray-400 hover:text-red-500" />
+                              </button>
+                            </div>
+            
+                            <div className="space-y-2">
+                              <h3 className="text-lg font-semibold text-gray-900">{property.price}</h3>
+                              <div className="flex items-center text-sm text-gray-600">
+                                <HomeIcon className="h-5 w-5 mr-2" />
+                                {property.beds} beds • {property.baths} baths • {property.sqft} sqft
+                              </div>
+                              <p className="text-sm text-gray-600">{property.location}</p>
+                              <button className="w-full mt-4 bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700">
+                                View Details
+                              </button>
+                            </div>
+                          </div>
+                        </Link>
           ))}
         </div>
       </div>

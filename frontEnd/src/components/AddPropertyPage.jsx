@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HomeIcon, PhotoIcon, MapPinIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, PhotoIcon, MapPinIcon, WalletIcon, CurrencyRupeeIcon } from '@heroicons/react/24/outline';
 import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
-
+import axios from "axios"
 const AddPropertyPage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -16,30 +16,22 @@ const AddPropertyPage = () => {
     bedrooms: 1,
     bathrooms: 1,
     sqft: '',
-    amenities: [],
     address: ''
   });
 
   const propertyTypes = ['House', 'Apartment', 'Condo', 'Townhouse', 'Land'];
-  const amenitiesList = ['Parking', 'Pool', 'Gym', 'Laundry', 'Balcony', 'Furnished'];
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleAmenityChange = (amenity) => {
-    const updatedAmenities = formData.amenities.includes(amenity)
-      ? formData.amenities.filter(a => a !== amenity)
-      : [...formData.amenities, amenity];
-    setFormData({ ...formData, amenities: updatedAmenities });
-  };
 
-  const handleImageUpload = async (e) => {
+
+  const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-    // Add your image upload logic here (e.g., upload to Cloudinary)
-    const uploadedImages = files.map(file => URL.createObjectURL(file));
-    setImages([...images, ...uploadedImages]);
+    setImages(prev => [...prev, ...files]); // Store File objects directly
   };
 
   const handleMapClick = (e) => {
@@ -48,29 +40,71 @@ const AddPropertyPage = () => {
       lng: e.latLng.lng()
     });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your submission logic here
+
+    const form = new FormData();
+    form.append('title', formData.title);
+    form.append('description', formData.description);
+    form.append('price', formData.price);
+    form.append('propertyType', formData.propertyType);
+    form.append('bedrooms', formData.bedrooms);
+    form.append('bathrooms', formData.bathrooms);
+    form.append('sqft', formData.sqft);
+    form.append('address', formData.address);
+    // form.append('location', JSON.stringify(location));
+
+    images.forEach((image) => {
+      form.append('images', image); // This will now work
+    });
+
     try {
-      const propertyData = {
-        ...formData,
-        location,
-        images
-      };
-      // await axios.post('/api/properties', propertyData);
-      navigate('/seller-dashboard');
+      console.log("in response");
+
+      const token = localStorage.getItem("token");
+
+      const response = await axios.post(
+        'http://localhost:5000/api/properties/add-new',
+        form,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response) {
+        navigate('/seller/dashboard');
+      }
+
     } catch (error) {
       console.error('Submission error:', error);
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   // Add your submission logic here
+  //   try {
+  //     const propertyData = {
+  //       ...formData,
+  //       location,
+  //       images
+  //     };
+  //     // await axios.post('/api/properties', propertyData);
+  //     navigate('/seller-dashboard');
+  //   } catch (error) {
+  //     console.error('Submission error:', error);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">List New Property</h1>
-          
+
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Step 1: Basic Information */}
             {step === 1 && (
@@ -104,7 +138,7 @@ const AddPropertyPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <CurrencyDollarIcon className="h-5 w-5 inline-block mr-1" />
+                      <WalletIcon className="h-5 w-5 inline-block mr-1" />
                       Price
                     </label>
                     <input
@@ -190,24 +224,7 @@ const AddPropertyPage = () => {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amenities
-                  </label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {amenitiesList.map(amenity => (
-                      <label key={amenity} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={formData.amenities.includes(amenity)}
-                          onChange={() => handleAmenityChange(amenity)}
-                          className="h-4 w-4 text-emerald-600 rounded border-gray-300"
-                        />
-                        <span className="text-sm text-gray-700">{amenity}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
+
 
                 <div className="flex justify-between">
                   <button
@@ -279,20 +296,21 @@ const AddPropertyPage = () => {
                       Click to upload or drag and drop
                     </label>
                     <p className="text-sm text-gray-500 mt-2">
-                      Up to 12 photos (JPEG, PNG)
+                      Up to 5 photos (JPEG, PNG)
                     </p>
                   </div>
-                  
+
                   <div className="grid grid-cols-3 gap-4 mt-4">
-                    {images.map((img, index) => (
+                    {images.map((file, index) => (
                       <div key={index} className="relative group">
                         <img
-                          src={img}
+                          src={URL.createObjectURL(file)}
                           alt={`Property ${index + 1}`}
                           className="h-32 w-full object-cover rounded-lg"
                         />
                       </div>
                     ))}
+
                   </div>
                 </div>
 

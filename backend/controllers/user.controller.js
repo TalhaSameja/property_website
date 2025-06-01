@@ -117,6 +117,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
 // @desc Get current user
 export const getCurrentUser = asyncHandler(async (req, res) => {
+  console.log("i am in get current user ")
   const user = await User.findById(req.user.id).select('-password');
   res.status(200).json(new ApiResponse(200, user));
 });

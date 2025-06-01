@@ -14,11 +14,7 @@ export const loginUser = createAsyncThunk(
       const accessToken = response.data.data.accessToken;
       const user = response.data.data.user;
 
-      if (rememberMe) {
         localStorage.setItem('token', accessToken);
-      } else {
-        sessionStorage.setItem('token', accessToken);
-      }
 
       return { user }; // send just what your reducer expects
     } catch (err) {
@@ -33,9 +29,10 @@ export const checkAuthStatus = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      console.log(token)
       if (!token) return rejectWithValue('No token found');
       
-      const response = await axios.get('/api/auth/me', {
+      const response = await axios.get('http://localhost:5000/api/users/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
       return response.data;

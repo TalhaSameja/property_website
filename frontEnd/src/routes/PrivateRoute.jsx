@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 const PrivateRoute = ({ roles }) => {
+  console.log("i am in private route")
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const location = useLocation();
 

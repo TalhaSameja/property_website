@@ -13,8 +13,8 @@ const SellerDashboard = () => {
   const stats = [
     { label: "Active Listings", value: 5, icon: HomeIcon },
     { label: "Total Earnings", value: "$52,400", icon: CurrencyDollarIcon },
-    { label: "Monthly Views", value: "2.1k", icon: ChartBarIcon },
-    { label: "Response Rate", value: "98%", icon: PencilIcon },
+   
+   
   ];
 
   const handleDeleteListing = (id) => {
@@ -125,12 +125,7 @@ const SellerDashboard = () => {
         </div>
 
         {/* Performance Chart (Placeholder) */}
-        <div className="mt-8 bg-white rounded-xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Performance</h3>
-          <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400">
-            Chart Area - Integrate your favorite charting library
-          </div>
-        </div>
+       
       </div>
 
       {/* Mobile Bottom Navigation */}

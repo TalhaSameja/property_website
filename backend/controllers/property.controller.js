@@ -7,27 +7,35 @@ import cloudinary from 'cloudinary';
 
 // CREATE Property
 export const createProperty = asyncHandler(async (req, res) => {
-  const { title, description, price, location, category } = req.body;
+  const { title, description, price, propertyType, bedrooms, bathrooms, sqft, address } = req.body;
 
-  if (!title || !description || !price || !location || !category) {
+  if (!title || !description || !price ||  !address|| !propertyType) {
     throw new ApiError(400, 'All fields are required');
   }
 
   const images = [];
-
+  console.log(req.files)
+ 
   for (const file of req.files) {
-    const result = await cloudinary.uploader.upload(file.path, {
-      folder: 'real-estate/properties',
-    });
-    images.push({ url: result.secure_url, public_id: result.public_id });
-  }
+  const base64String = file.buffer.toString("base64");
+  const dataURI = `data:${file.mimetype};base64,${base64String}`;
+
+  const result = await cloudinary.uploader.upload(dataURI, {
+    folder: 'real-estate/properties',
+  });
+
+  images.push(result.secure_url);
+}
+
 
   const property = await Property.create({
     title,
     description,
     price,
-    location,
-    category,
+    location : address,
+    propertyType,
+    bathrooms,
+    bedrooms,
     images,
     createdBy: req.user._id,
   });
@@ -43,7 +51,7 @@ export const getAllProperties = asyncHandler(async (req, res) => {
 
 // GET Single Property by ID
 export const getPropertyById = asyncHandler(async (req, res) => {
-  const property = await Property.findById(req.params.id).populate('createdBy', 'name email');
+  const property = await Property.findById(req.params.id).populate('createdBy', 'name email phone');
   if (!property) throw new ApiError(404, 'Property not found');
   res.status(200).json(new ApiResponse(200, property));
 });

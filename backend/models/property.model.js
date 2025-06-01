@@ -15,25 +15,31 @@ const propertySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-
+  bedrooms:{
+    type: Number,
+    default: 1
+  },
+  bathrooms:{
+    type: Number,
+    defalut: 1
+  },
+  sqft:{
+    type: Number,
+    default: 12
+  },
   propertyType: {
     type: String,
-    enum: ['house', 'apartment', 'flat', 'villa', 'other'],
-    default: 'other',
+   
   },
 
   location: {
-    address: { type: String, required: true },
-    city: { type: String, required: true },
-    lat: { type: Number, required: true },
-    lng: { type: Number, required: true },
+    type:String, 
+    default : ""
   },
 
   images: [
-    {
-      type: String,
-    },
-  ],
+    String
+],
 
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

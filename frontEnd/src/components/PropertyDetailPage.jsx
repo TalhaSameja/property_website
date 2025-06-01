@@ -1,43 +1,45 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeftIcon, HeartIcon, ShareIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
+import { useEffect, useState } from 'react';
+import { ArrowLeftIcon, HeartIcon, ShareIcon } from '@heroicons/react/24/outline';
 import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
+import axios from 'axios';
 
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [property, setProperty] = useState(null);
 
-  // Mock data - replace with API call
-  const property = {
-    id: 1,
-    price: "$599,000",
-    beds: 3,
-    baths: 2,
-    sqft: 1800,
-    location: "Downtown",
-    description: "Stunning modern apartment with panoramic city views. Features open floor plan, high-end finishes, and smart home technology.",
-    features: ["Hardwood floors", "Central A/C", "Balcony", "Parking included"],
-    images: [
-      "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf",
-      "https://images.unsplash.com/photo-1582719508461-905c673771fd",
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9"
-    ]
-  };
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/properties/${id}`); // 🔁 Replace with your backend API
+        setProperty(res.data.data);
+        console.log(res.data.data)
+      } catch (err) {
+        console.error('Failed to fetch property:', err);
+      }
+    };
+    fetchProperty();
+  }, [id]);
+
+  if (!property) return <div className="text-center p-8">Loading...</div>;
 
   const mapContainerStyle = {
     width: '100%',
-    height: '400px'
+    height: '400px',
   };
 
-  const center = {
-    lat: 40.7128,
-    lng: -74.0060
+  const mapCenter = {
+    lat: property.latitude || 40.7128,
+    lng: property.longitude || -74.0060,
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
         {/* Back Button */}
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="mb-8 flex items-center text-emerald-600 hover:text-emerald-700"
         >
@@ -47,24 +49,29 @@ const PropertyDetailPage = () => {
 
         {/* Main Content */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          {/* Image Gallery */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+
+            {/* Image Gallery */}
             <div className="space-y-4">
-              <img 
-                src={property.images[0]} 
-                alt="Main" 
-                className="w-full h-96 object-cover rounded-lg"
-              />
-              <div className="grid grid-cols-3 gap-4">
-                {property.images.slice(1).map((img, index) => (
-                  <img 
-                    key={index} 
-                    src={img} 
-                    alt={`Property ${index + 1}`} 
-                    className="w-full h-32 object-cover rounded-lg"
+              {property.images && property.images.length > 0 && (
+                <>
+                  <img
+                    src={property.images[0]}
+                    alt="Main"
+                    className="w-full h-96 object-cover rounded-lg"
                   />
-                ))}
-              </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    {property.images.slice(1).map((img, index) => (
+                      <img
+                        key={index}
+                        src={img}
+                        alt={`Property ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Property Details */}
@@ -82,65 +89,49 @@ const PropertyDetailPage = () => {
               </div>
 
               <div className="flex items-center text-gray-600">
-                <span className="text-lg">{property.beds} beds</span>
+                <span className="text-lg">{property.bedrooms} beds</span>
                 <span className="mx-2">•</span>
-                <span className="text-lg">{property.baths} baths</span>
+                <span className="text-lg">{property.bathrooms} baths</span>
                 <span className="mx-2">•</span>
                 <span className="text-lg">{property.sqft} sqft</span>
               </div>
 
               <p className="text-gray-600">{property.description}</p>
 
+              {/* Features */}
               <div className="border-t border-b border-gray-200 py-6">
-                <h3 className="text-xl font-semibold mb-4">Features</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {property.features.map((feature, index) => (
-                    <div key={index} className="flex items-center">
-                      <span className="text-emerald-600 mr-2">✓</span>
-                      {feature}
-                    </div>
-                  ))}
+                <h3 className="text-xl font-semibold mb-4">Description</h3>
+                <p className="text-gray-700">{property.description}</p>
+              </div>
+
+
+              {/* Contact Details */}
+              <div className="space-y-4">
+                <h3 className="text-xl font-semibold">Contact Agent</h3>
+
+                <div className="bg-gray-100 p-4 rounded-lg space-y-2">
+                  <p><span className="font-medium">Name:</span> {property?.createdBy?.name || 'N/A'}</p>
+                  <p><span className="font-medium">Email:</span> {property?.createdBy?.email || 'N/A'}</p>
+                  <p><span className="font-medium">Phone:</span> {property?.createdBy.phone}</p>
                 </div>
               </div>
 
-              {/* Contact Form */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold">Contact Agent</h3>
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  className="w-full px-4 py-2 border rounded-lg"
-                />
-                <input
-                  type="email"
-                  placeholder="Your Email"
-                  className="w-full px-4 py-2 border rounded-lg"
-                />
-                <textarea
-                  placeholder="Message"
-                  rows="4"
-                  className="w-full px-4 py-2 border rounded-lg"
-                ></textarea>
-                <button className="w-full bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700">
-                  Send Message
-                </button>
-              </div>
             </div>
           </div>
 
-          {/* Map */}
-          <div className="p-8 border-t border-gray-200">
+          {/* Map Section */}
+          {/* <div className="p-8 border-t border-gray-200">
             <h3 className="text-xl font-semibold mb-4">Location</h3>
             <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
               <GoogleMap
                 mapContainerStyle={mapContainerStyle}
-                center={center}
+                center={mapCenter}
                 zoom={14}
               >
-                <Marker position={center} />
+                <Marker position={mapCenter} />
               </GoogleMap>
             </LoadScript>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -12,12 +12,16 @@ import AddPropertyPage from './components/AddPropertyPage';
 
 import PropertyListPage from './components/PropertyListPage';
 import PropertyDetailPage from './components/PropertyDetailPage';
+import Navbar from './components/Navbar';
 
 // Add these routes
 
 function App() {
   return (
+    <>
     <Router>
+    <Navbar className="fixed top-0 left-0 w-full z-50"/>
+      <main className="pt-20 px-4 sm:px-6 lg:px-8">
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
@@ -29,20 +33,22 @@ function App() {
         <Route path="/properties/:id" element={<PropertyDetailPage />} />
         {/* Protected Routes */}
         <Route element={<PrivateRoute roles={['buyer']} />}>
-          <Route path="/dashboard" element={<BuyerDashboard />} />
+          <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
         </Route>
 
         <Route element={<PrivateRoute roles={['seller']} />}>
-          <Route path="/seller-dashboard" element={<SellerDashboard />} />
+          <Route path="/seller/dashboard" element={<SellerDashboard />} />
         </Route>
         <Route element={<PrivateRoute roles={['admin']} />}>
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
         <Route element={<PrivateRoute roles={['seller']} />}>
           <Route path="/add-property" element={<AddPropertyPage />} />
         </Route>
       </Routes>
+      </main>
     </Router>
+    </>
   );
 }
 
