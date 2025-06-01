@@ -120,9 +120,9 @@ const PropertyDetailPage = () => {
           </div>
 
           {/* Map Section */}
-          {/* <div className="p-8 border-t border-gray-200">
+          <div className="p-8 border-t border-gray-200">
             <h3 className="text-xl font-semibold mb-4">Location</h3>
-            <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+            <LoadScript googleMapsApiKey="AIzaSyA7zzRuUdiAEq66jm9C6e_37a4GYbMnFNs">
               <GoogleMap
                 mapContainerStyle={mapContainerStyle}
                 center={mapCenter}
@@ -131,7 +131,7 @@ const PropertyDetailPage = () => {
                 <Marker position={mapCenter} />
               </GoogleMap>
             </LoadScript>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

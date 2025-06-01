@@ -263,7 +263,7 @@ const AddPropertyPage = () => {
                 </div>
 
                 <div className="h-96 rounded-lg overflow-hidden">
-                  <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+                  <LoadScript googleMapsApiKey="AIzaSyA7zzRuUdiAEq66jm9C6e_37a4GYbMnFNs">
                     <GoogleMap
                       mapContainerStyle={{ width: '100%', height: '100%' }}
                       center={location}

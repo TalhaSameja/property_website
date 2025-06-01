@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom';
 
 import { HomeIcon, BuildingOfficeIcon, HeartIcon, UserCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import {useSelector} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
+import { useEffect } from 'react';
+import { fetchProperties } from '../store/slices/propertySlice';
 const HomePage = () => {
   const {properties} = useSelector(state=> state.property)
   const featuredProperties = properties || [];
+  const dispatch = useDispatch();
+  useEffect(()=>{
+    dispatch(fetchProperties());
+  }, [dispatch]);
  
   return (
     <div className="min-h-screen flex flex-col">
@@ -44,9 +50,9 @@ const HomePage = () => {
                 </div>
                 <select className="rounded-md border-0 bg-gray-100 py-3 px-4 focus:ring-2 focus:ring-emerald-500">
                   <option>Price Range</option>
-                  <option>$100k - $300k</option>
-                  <option>$300k - $500k</option>
-                  <option>$500k+</option>
+                  <option>Rs:100k - Rs:300k</option>
+                  <option>Rs:300k - Rs:500k</option>
+                  <option>Rs:500k+</option>
                 </select>
                 <button className="bg-emerald-600 text-white px-6 py-3 rounded-md hover:bg-emerald-700 transition-colors">
                   Search
