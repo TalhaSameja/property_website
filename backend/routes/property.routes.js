@@ -8,7 +8,8 @@ import {
   addToFavourites,
   getUserFavourites,
   searchProperties,
-  getMyProperties
+  getMyProperties,
+  deleteFavourite
 } from '../controllers/property.controller.js';
 
 import { protect } from '../middlewares/auth.middleware.js';
@@ -26,6 +27,7 @@ router.get('/', getAllProperties);
 router.get('/search', searchProperties);
 
 router.get('/favourites', protect, getUserFavourites);
+router.delete("/delete/favourite/:id", protect, deleteFavourite)
 // Get property by ID
 router.get('/:id', getPropertyById);
 

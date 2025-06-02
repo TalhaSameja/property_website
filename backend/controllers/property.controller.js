@@ -162,3 +162,26 @@ export const getMyProperties = asyncHandler(async (req, res) => {
   const properties = await Property.find({ createdBy: req.user._id });
   res.status(200).json(new ApiResponse(200, properties, 'User properties fetched successfully'));
 });
+
+
+export const deleteFavourite = asyncHandler(async (req, res) => {
+  const propertyId = req.params.id;
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  // Remove the property ID from favourites
+  user.favourites.pull(propertyId);
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: 'Property removed from favourites',
+    favourites: user.favourites,
+  });
+});
+

@@ -44,9 +44,29 @@ useEffect(() => {
   };
 
   fetchFavourites();
-}, []);
+}, [favouriteProperties]);
 
- 
+   const handleToggleFavourite = async (propertyId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(
+        `http://localhost:5000/api/properties/delete/favourite/${propertyId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Remove property from UI
+      setFavouriteProperties((prev) =>
+        prev.filter((property) => property._id !== propertyId)
+      );
+    } catch (error) {
+      console.error('Failed to toggle favourite:', error.response?.data?.message || error.message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -85,12 +105,13 @@ useEffect(() => {
                     <div className="p-4">
                       <div className="relative mb-4">
                         <img
-                          src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf"
+                          src={property.images[0]}
                           alt="Property"
                           className="w-full h-48 object-cover rounded-lg"
                         />
                         <button className="absolute top-2 right-2 p-2 bg-white/90 rounded-full">
-                          <HeartIcon className={`h-6 w-6 ${property.saved ? 'text-red-500' : 'text-gray-400'}`} />
+                        <HeartIcon onClick={()=>handleToggleFavourite()} className="h-6 w-6 text-red-500" />
+
                         </button>
                       </div>
                       

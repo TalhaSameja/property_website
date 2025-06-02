@@ -112,6 +112,7 @@ const PropertyDetailPage = () => {
                 <div className="bg-gray-100 p-4 rounded-lg space-y-2">
                   <p><span className="font-medium">Name:</span> {property?.createdBy?.name || 'N/A'}</p>
                   <p><span className="font-medium">Email:</span> {property?.createdBy?.email || 'N/A'}</p>
+                  {console.log(property)}
                   <p><span className="font-medium">Phone:</span> {property?.createdBy.phone}</p>
                 </div>
               </div>
