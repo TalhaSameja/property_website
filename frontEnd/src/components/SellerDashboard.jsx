@@ -1,21 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { HomeIcon, PlusIcon, PencilIcon, ChartBarIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
-
+import axios from 'axios';
 const SellerDashboard = () => {
-  // Mock data - replace with actual data from API
-  const [listings, setListings] = useState([
-    { id: 1, title: "Modern Downtown Apartment", price: "$599,000", status: "Active", views: 245, inquiries: 12 },
-    { id: 2, title: "Suburban Family Home", price: "$799,000", status: "Pending", views: 168, inquiries: 8 },
-    { id: 3, title: "Luxury Penthouse", price: "$1,299,000", status: "Draft", views: 45, inquiries: 3 },
-  ]);
+
+
+  const [listings, setListings] = useState([]);
 
   const stats = [
     { label: "Active Listings", value: 5, icon: HomeIcon },
-    { label: "Total Earnings", value: "$52,400", icon: CurrencyDollarIcon },
-   
-   
+
+
+
   ];
+
+
+  useEffect(() => {
+    const fetchMyProperties = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const response = await axios.get('http://localhost:5000/api/properties/my-properties', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setListings(response.data.properties);
+      } catch (error) {
+        console.error('Error fetching user properties:', error);
+      }
+    };
+
+    fetchMyProperties();
+  }, []);
 
   const handleDeleteListing = (id) => {
     setListings(listings.filter(listing => listing.id !== id));
@@ -24,27 +42,6 @@ const SellerDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <Link to="/" className="text-xl font-bold text-emerald-600">
-              EstatePro Seller
-            </Link>
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-600 hover:text-emerald-600">
-                <ChartBarIcon className="h-6 w-6" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-emerald-600">
-                <img 
-                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80" 
-                  alt="Profile" 
-                  className="h-8 w-8 rounded-full"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Overview */}
@@ -54,7 +51,7 @@ const SellerDashboard = () => {
               <div className="flex items-center">
                 <stat.icon className="h-12 w-12 text-emerald-600 mr-4" />
                 <div>
-                  <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
+                  <div className="text-2xl font-bold text-gray-900">{listings.length}</div>
                   <div className="text-sm text-gray-600">{stat.label}</div>
                 </div>
               </div>
@@ -88,7 +85,7 @@ const SellerDashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {listings.map((listing) => (
+              {listings && listings.map((listing) => (
                 <tr key={listing.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{listing.title}</div>
@@ -97,11 +94,10 @@ const SellerDashboard = () => {
                     <div className="text-sm text-gray-900">{listing.price}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      listing.status === 'Active' ? 'bg-green-100 text-green-800' :
-                      listing.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${listing.status === 'Active' ? 'bg-green-100 text-green-800' :
+                        listing.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-gray-100 text-gray-800'
+                      }`}>
                       {listing.status}
                     </span>
                   </td>
@@ -111,7 +107,7 @@ const SellerDashboard = () => {
                     <button className="text-emerald-600 hover:text-emerald-900 mr-4">
                       <PencilIcon className="h-5 w-5" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDeleteListing(listing.id)}
                       className="text-red-600 hover:text-red-900"
                     >
@@ -125,7 +121,7 @@ const SellerDashboard = () => {
         </div>
 
         {/* Performance Chart (Placeholder) */}
-       
+
       </div>
 
       {/* Mobile Bottom Navigation */}
@@ -141,8 +137,8 @@ const SellerDashboard = () => {
             <ChartBarIcon className="h-6 w-6" />
           </button>
           <button className="text-gray-600">
-            <img 
-              src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80" 
+            <img
+              src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80"
               className="h-6 w-6 rounded-full"
               alt="Profile"
             />

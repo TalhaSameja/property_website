@@ -114,6 +114,7 @@ export const updateProperty = asyncHandler(async (req, res) => {
 export const addToFavourites = asyncHandler(async (req, res) => {
   const propertyId = req.params.id;
   const user = await User.findById(req.user._id);
+  console.log(user)
 
   const index = user.favourites.indexOf(propertyId);
   if (index === -1) {
@@ -130,6 +131,7 @@ export const addToFavourites = asyncHandler(async (req, res) => {
 // GET User Favourites
 export const getUserFavourites = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).populate('favourites');
+  console.log(user)
   res.status(200).json(new ApiResponse(200, user.favourites, 'Favourite properties fetched'));
 });
 
@@ -153,4 +155,10 @@ export const searchProperties = asyncHandler(async (req, res) => {
 
   const results = await Property.find(query);
   res.status(200).json(new ApiResponse(200, results, 'Search results'));
+});
+
+// GET Properties Created by Logged-in User
+export const getMyProperties = asyncHandler(async (req, res) => {
+  const properties = await Property.find({ createdBy: req.user._id });
+  res.status(200).json(new ApiResponse(200, properties, 'User properties fetched successfully'));
 });

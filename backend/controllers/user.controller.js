@@ -48,7 +48,9 @@ export const verifyOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
 
   const user = await User.findOne({ email });
-  if (!user || user.otp !== otp) throw new ApiError(400, 'Invalid OTP');
+  if (!user || user.otp !== otp){
+    await User.findByIdAndDelete(user.id)
+     throw new ApiError(400, 'Invalid OTP');}
 
   user.isVerified = true;
   user.otp = null;
@@ -162,3 +164,4 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, { message: 'Profile updated successfully' }));
 });
+

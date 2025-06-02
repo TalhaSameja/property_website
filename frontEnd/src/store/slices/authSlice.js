@@ -12,8 +12,9 @@ export const loginUser = createAsyncThunk(
       });
 
       const accessToken = response.data.data.accessToken;
+      
       const user = response.data.data.user;
-
+      localStorage.setItem("user", user);
         localStorage.setItem('token', accessToken);
 
       return { user }; // send just what your reducer expects

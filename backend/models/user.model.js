@@ -47,7 +47,14 @@ const userSchema = new mongoose.Schema(
     profilePic: {
       type: String,
       default: ""
-    }
+    },
+    favourites: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Property',
+  },
+],
+
   },
   {
     timestamps: true,

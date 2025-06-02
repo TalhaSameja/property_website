@@ -1,42 +1,56 @@
 import { Link } from 'react-router-dom';
 import { HomeIcon, HeartIcon, BellIcon, UserCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const BuyerDashboard = () => {
-  // Mock data - replace with actual data from your API
-  const recommendedProperties = [
-    { id: 1, price: '$599,000', beds: 3, baths: 2, sqft: 1800, location: 'Downtown', saved: true },
-    { id: 2, price: '$799,000', beds: 4, baths: 3, sqft: 2500, location: 'Suburbs', saved: false },
-    { id: 3, price: '$1,299,000', beds: 3, baths: 3, sqft: 3200, location: 'Lakeside', saved: true },
-  ];
+  
+  const dispatch = useDispatch();
+const [favouriteProperties, setFavouriteProperties] = useState([]);
 
-  const savedSearches = [
-    { id: 1, location: 'Downtown', minPrice: '$500k', maxPrice: '$800k', beds: 3 },
-    { id: 2, location: 'Suburbs', minPrice: '$400k', maxPrice: '$600k', beds: 4 },
-  ];
+useEffect(() => {
+  const fetchFavourites = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/properties/favourites`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+        setFavouriteProperties(res.data.data);
+    } catch (error) {
+      console.error('Failed to fetch favourites:', error.response?.data?.message || error.message);
+    }
+  };
+
+  fetchFavourites();
+}, []);
+
+useEffect(() => {
+  const fetchFavourites = async () => {
+    try {
+      console.log("in fetch")
+      const res = await axios.get(`http://localhost:5000/api/properties/favourites`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      console.log(res.data.data);
+      const temp = res.data.data;
+      setRecomendedPropertiese(temp);
+    } catch (error) {
+      console.error('Failed to fetch favourites:', error.response?.data?.message || error.message);
+    }
+  };
+
+  fetchFavourites();
+}, []);
+
+ 
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center">
-              <Link to="/" className="text-xl font-bold text-emerald-600">
-                EstatePro
-              </Link>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-600 hover:text-emerald-600">
-                <BellIcon className="h-6 w-6" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-emerald-600">
-                <UserCircleIcon className="h-6 w-6" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -45,27 +59,14 @@ const BuyerDashboard = () => {
             {/* Welcome Section */}
             <div className="bg-white rounded-xl p-6 shadow-sm mb-8">
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Welcome back, Alex!
+                Welcome back 
               </h1>
               <p className="text-gray-600">
-                {recommendedProperties.length} new properties match your preferences
+                {favouriteProperties?.length} Here are your Favourite Properties
               </p>
             </div>
 
-            {/* Search Bar */}
-            <div className="bg-white rounded-xl p-6 shadow-sm mb-8">
-              <div className="flex items-center gap-4">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search properties by location, price, or features"
-                  className="flex-1 border-0 focus:ring-0"
-                />
-                <button className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700">
-                  Search
-                </button>
-              </div>
-            </div>
+        
 
             {/* Recommended Properties */}
             <div className="mb-8">
@@ -79,7 +80,7 @@ const BuyerDashboard = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recommendedProperties.map((property) => (
+                {favouriteProperties?.map((property) => (
                   <div key={property.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
                     <div className="p-4">
                       <div className="relative mb-4">
@@ -111,75 +112,10 @@ const BuyerDashboard = () => {
             </div>
 
             {/* Saved Searches */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Saved Searches
-              </h2>
-              <div className="space-y-4">
-                {savedSearches.map((search) => (
-                  <div key={search.id} className="border-b border-gray-100 pb-4 last:border-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-medium text-gray-900">{search.location}</h3>
-                        <p className="text-sm text-gray-600">
-                          {search.minPrice} - {search.maxPrice} • {search.beds}+ beds
-                        </p>
-                      </div>
-                      <button className="text-emerald-600 hover:text-emerald-700">
-                        Search Again
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+           
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:w-80">
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Quick Filters
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Price Range
-                  </label>
-                  <select className="w-full border border-gray-200 rounded-lg px-4 py-2">
-                    <option>Any Price</option>
-                    <option>$300k - $500k</option>
-                    <option>$500k - $800k</option>
-                    <option>$800k+</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Bedrooms
-                  </label>
-                  <select className="w-full border border-gray-200 rounded-lg px-4 py-2">
-                    <option>Any</option>
-                    <option>1+</option>
-                    <option>2+</option>
-                    <option>3+</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Property Type
-                  </label>
-                  <select className="w-full border border-gray-200 rounded-lg px-4 py-2">
-                    <option>All Types</option>
-                    <option>House</option>
-                    <option>Apartment</option>
-                    <option>Condo</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
+         
         </div>
       </div>
 

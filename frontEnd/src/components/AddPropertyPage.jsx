@@ -8,6 +8,8 @@ const AddPropertyPage = () => {
   const [step, setStep] = useState(1);
   const [location, setLocation] = useState({ lat: 40.7128, lng: -74.0060 });
   const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -42,6 +44,7 @@ const AddPropertyPage = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
 
     const form = new FormData();
     form.append('title', formData.title);
@@ -52,17 +55,10 @@ const AddPropertyPage = () => {
     form.append('bathrooms', formData.bathrooms);
     form.append('sqft', formData.sqft);
     form.append('address', formData.address);
-    // form.append('location', JSON.stringify(location));
-
-    images.forEach((image) => {
-      form.append('images', image); // This will now work
-    });
+    images.forEach((image) => form.append('images', image));
 
     try {
-      console.log("in response");
-
       const token = localStorage.getItem("token");
-
       const response = await axios.post(
         'http://localhost:5000/api/properties/add-new',
         form,
@@ -80,8 +76,11 @@ const AddPropertyPage = () => {
 
     } catch (error) {
       console.error('Submission error:', error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
+
 
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
@@ -324,9 +323,10 @@ const AddPropertyPage = () => {
                   </button>
                   <button
                     type="submit"
-                    className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700"
+                    className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+                    disabled={loading}
                   >
-                    List Property
+                    {loading ? 'Listing Property...' : 'List Property'}
                   </button>
                 </div>
               </div>

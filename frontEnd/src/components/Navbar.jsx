@@ -61,7 +61,7 @@ function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <BuildingOfficeIcon className="h-8 w-8 text-emerald-600" />
-            <span className="text-2xl font-bold text-gray-900">EstatePro</span>
+            <span className="text-2xl font-bold text-gray-900">eProperty</span>
           </Link>
 
           {/* Desktop Menu */}
