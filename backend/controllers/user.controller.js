@@ -48,12 +48,13 @@ export const verifyOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
 
   const user = await User.findOne({ email });
-  if (!user || user.otp !== otp){
+  const verified = await user.matchOtp(otp);
+  if (!user || !verified){
     await User.findByIdAndDelete(user.id)
      throw new ApiError(400, 'Invalid OTP');}
 
   user.isVerified = true;
-  user.otp = null;
+  user.otp = "";
   await user.save();
 
   res.status(200).json(new ApiResponse(200, { message: 'Email verified successfully' }));

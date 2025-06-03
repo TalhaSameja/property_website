@@ -69,10 +69,21 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('otp')) return next();
+  const salt = await bcrypt.genSalt(10);
+  this.otp = await bcrypt.hash(this.otp, salt);
+  next();
+});
 // 🔐 Compare entered password with hashed password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+// 🔐 Compare entered password with hashed password
+userSchema.methods.matchOtp = async function (enteredOtp) {
+  return await bcrypt.compare(enteredOtp, this.otp);
+};
+
 
 // 🔑 Generate Access Token (Short-lived)
 userSchema.methods.generateAccessToken = function () {
