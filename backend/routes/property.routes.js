@@ -7,7 +7,8 @@ import {
   getUserFavourites,
   searchProperties,
   getMyProperties,
-  deleteFavourite
+  deleteFavourite,
+  deleteProperty
 } from '../controllers/property.controller.js';
 
 import { protect } from '../middlewares/auth.middleware.js';
@@ -21,9 +22,10 @@ router.post('/add-new', protect, upload.array('images', 5), createProperty);
 
 //search properties
 router.post("/search", searchProperties);
-
+router.delete("/:id", protect, deleteProperty);
 // Get all properties
 router.get('/', getAllProperties);
+router.get('/my-properties', protect, getMyProperties);
 
 
 router.get('/favourites', protect, getUserFavourites);
@@ -39,6 +41,5 @@ router.post('/favourite/:id', protect, addToFavourites);
 // Get user favourites
 
 // Get all properties created by the logged-in user
-router.get('/my-properties', protect, getMyProperties);
 
 export default router;

@@ -137,3 +137,24 @@ export const deleteFavourite = asyncHandler(async (req, res) => {
   });
 });
 
+export const deleteProperty = asyncHandler(async (req, res) => {
+  // 1) Find the property by ID
+  console.log("i am delete property")
+  const property = await Property.findById(req.params.id);
+
+  if (!property) {
+    res.status(404);
+    throw new Error("Property not found");
+  }
+
+
+  if (property.createdBy.toString() !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error("Not authorized to delete this property");
+  }
+
+  await Property.findByIdAndDelete(property._id);
+
+
+  res.status(200).json({ message: "Property deleted successfully", id: req.params.id });
+});

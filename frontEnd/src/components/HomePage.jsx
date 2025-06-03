@@ -16,17 +16,17 @@ const HomePage = () => {
 
   const { properties } = useSelector((state) => state.property);
 
-  // 1) Correct array destructuring for useState:
+
   const [featuredProperties, setFeaturedProperties] = useState([]);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
 
-  // 2) Fetch all properties once on mount:
+
   useEffect(() => {
     dispatch(fetchProperties());
   }, [dispatch]);
 
-  // 3) Whenever `properties` from the store changes, initialize `featuredProperties`:
+
   useEffect(() => {
     setFeaturedProperties(properties);
   }, [properties]);
@@ -55,7 +55,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero / Search Bar */}
+    
       <div className="relative pt-16 pb-32">
         <div className="absolute inset-0">
           <img
@@ -105,14 +105,14 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* If no results, show a message */}
+    
       {featuredProperties?.length === 0 && (
         <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
           No properties available in this range
         </h2>
       )}
 
-      {/* Featured Properties */}
+     
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-3xl font-bold text-gray-900 mb-8">Featured Properties</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -155,17 +155,17 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Quote Section */}
+   
       <div className="bg-emerald-50 py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <blockquote className="text-2xl font-medium text-gray-900">
             “Home is where our story begins. Let us help you write the perfect first chapter.”
           </blockquote>
-          <div className="mt-4 text-emerald-600 font-medium">- EstatePro Team</div>
+          <div className="mt-4 text-emerald-600 font-medium">- eProperty Team</div>
         </div>
       </div>
 
-      {/* Footer */}
+      
       <footer className="bg-gray-900 text-white mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
