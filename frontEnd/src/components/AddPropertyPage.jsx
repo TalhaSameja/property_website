@@ -6,7 +6,7 @@ import axios from "axios"
 const AddPropertyPage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [location, setLocation] = useState({ lat: 40.7128, lng: -74.0060 });
+  const [location, setLocation] = useState({ lat: 31.5204, lng: 74.3585 });
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
 

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { loginUser, clearError, checkAuthStatus } from '../store/slices/authSlice';
 
-import axios  from 'axios';
 const SigninPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -13,11 +12,10 @@ const SigninPage = () => {
     email: '',
     password: '',
   });
-  const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
   if (isAuthenticated) {
-    navigate('/dashboard');
+    navigate('/');
   }
 }, [isAuthenticated, navigate]);
 
@@ -28,17 +26,15 @@ const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
-    const resultAction = await dispatch(loginUser({ ...formData, rememberMe }));
+    const resultAction = await dispatch(loginUser({ ...formData }));
     if (loginUser.fulfilled.match(resultAction)) {
-      const userRole = resultAction.payload.user.role; // ✅ Corrected line
+      const userRole = resultAction.payload.user.role; 
 
       if (userRole === 'buyer') {
         navigate('/buyer/dashboard');
       } else if (userRole === 'seller') {
         navigate('/seller/dashboard');
-      } else if (userRole === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
+      }  else {
         console.warn('Unknown role:', userRole);
       }
     }
@@ -131,23 +127,7 @@ const handleSubmit = async (e) => {
 
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
-                  disabled={loading}
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-900"
-                >
-                  Remember me
-                </label>
-              </div>
+              
               <button
                 type="button"
                 onClick={() => navigate('/forgot-password')}

@@ -12,7 +12,7 @@ const PropertyDetailPage = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/properties/${id}`); // 🔁 Replace with your backend API
+        const res = await axios.get(`http://localhost:5000/api/properties/${id}`); 
         setProperty(res.data.data);
         console.log(res.data.data)
       } catch (err) {
@@ -30,10 +30,29 @@ const PropertyDetailPage = () => {
   };
 
   const mapCenter = {
-    lat: property.latitude || 40.7128,
-    lng: property.longitude || -74.0060,
+    lat:  31.5204,
+    lng:  74.3587,
   };
-
+const handleAddToFavourites = async (propertyId) => {
+  try {
+    const res = await axios.post(
+      `http://localhost:5000/api/properties/favourite/${propertyId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      }
+    );
+    console.log('Added to favourites:', res.data);
+    // Optional: Show toast or update state
+  } catch (err) {
+    console.error('Failed to add to favourites:', err.response?.data?.message || err.message);
+    if (err.response?.status === 401) {
+      navigate('/login');
+    }
+  }
+};
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -80,11 +99,9 @@ const PropertyDetailPage = () => {
                 <h1 className="text-3xl font-bold text-gray-900">{property.price}</h1>
                 <div className="flex space-x-4">
                   <button className="text-gray-400 hover:text-emerald-600">
-                    <HeartIcon className="h-6 w-6" />
+                    <HeartIcon onClick={()=>handleAddToFavourites(property._id)}  className="h-6 w-6" />
                   </button>
-                  <button className="text-gray-400 hover:text-emerald-600">
-                    <ShareIcon className="h-6 w-6" />
-                  </button>
+                  
                 </div>
               </div>
 

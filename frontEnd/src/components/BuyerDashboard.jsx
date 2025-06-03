@@ -10,6 +10,7 @@ const BuyerDashboard = () => {
 const [favouriteProperties, setFavouriteProperties] = useState([]);
 
 useEffect(() => {
+
   const fetchFavourites = async () => {
     try {
       const res = await axios.get(`http://localhost:5000/api/properties/favourites`, {
@@ -24,40 +25,24 @@ useEffect(() => {
   };
 
   fetchFavourites();
-}, []);
-
-useEffect(() => {
-  const fetchFavourites = async () => {
-    try {
-      console.log("in fetch")
-      const res = await axios.get(`http://localhost:5000/api/properties/favourites`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      console.log(res.data.data);
-      const temp = res.data.data;
-      setRecomendedPropertiese(temp);
-    } catch (error) {
-      console.error('Failed to fetch favourites:', error.response?.data?.message || error.message);
-    }
-  };
-
-  fetchFavourites();
 }, [favouriteProperties]);
+
 
    const handleToggleFavourite = async (propertyId) => {
     try {
+      console.log(propertyId)
       const token = localStorage.getItem("token");
-      await axios.delete(
+      console.log(token)
+    const res =   await axios.delete(
         `http://localhost:5000/api/properties/delete/favourite/${propertyId}`,
-        {},
+        
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+      console.log(res)
 
       // Remove property from UI
       setFavouriteProperties((prev) =>
@@ -88,20 +73,17 @@ useEffect(() => {
 
         
 
-            {/* Recommended Properties */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Recommended for You
+                 Your Favourites Properties
                 </h2>
-                <Link to="/properties" className="text-emerald-600 hover:text-emerald-700">
-                  See all
-                </Link>
+               
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {favouriteProperties?.map((property) => (
-                  <div key={property.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                  <div key={property._id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
                     <div className="p-4">
                       <div className="relative mb-4">
                         <img
@@ -110,7 +92,7 @@ useEffect(() => {
                           className="w-full h-48 object-cover rounded-lg"
                         />
                         <button className="absolute top-2 right-2 p-2 bg-white/90 rounded-full">
-                        <HeartIcon onClick={()=>handleToggleFavourite()} className="h-6 w-6 text-red-500" />
+                        <HeartIcon onClick={()=>handleToggleFavourite(property._id)} className="h-6 w-6 text-red-500" />
 
                         </button>
                       </div>
@@ -132,7 +114,6 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Saved Searches */}
            
           </div>
 
@@ -140,7 +121,6 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Mobile Bottom Navigation */}
       <div className="lg:hidden fixed bottom-0 w-full bg-white border-t border-gray-200">
         <div className="flex justify-around p-4">
           <button className="text-emerald-600">

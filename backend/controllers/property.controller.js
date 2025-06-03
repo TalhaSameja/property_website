@@ -56,59 +56,6 @@ export const getPropertyById = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, property));
 });
 
-// DELETE Property
-export const deleteProperty = asyncHandler(async (req, res) => {
-  const property = await Property.findById(req.params.id);
-  if (!property) throw new ApiError(404, 'Property not found');
-
-  if (property.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-    throw new ApiError(403, 'Not authorized to delete this property');
-  }
-
-  for (const img of property.images) {
-    await cloudinary.uploader.destroy(img.public_id);
-  }
-
-  await property.deleteOne();
-
-  res.status(200).json(new ApiResponse(200, null, 'Property deleted successfully'));
-});
-
-// UPDATE Property
-export const updateProperty = asyncHandler(async (req, res) => {
-  const property = await Property.findById(req.params.id);
-  if (!property) throw new ApiError(404, 'Property not found');
-
-  if (property.createdBy.toString() !== req.user._id.toString()) {
-    throw new ApiError(403, 'Not authorized to update this property');
-  }
-
-  const { title, description, price, location, category } = req.body;
-  if (title) property.title = title;
-  if (description) property.description = description;
-  if (price) property.price = price;
-  if (location) property.location = location;
-  if (category) property.category = category;
-
-  if (req.files.length > 0) {
-    for (const img of property.images) {
-      await cloudinary.uploader.destroy(img.public_id);
-    }
-
-    const newImages = [];
-    for (const file of req.files) {
-      const result = await cloudinary.uploader.upload(file.path, {
-        folder: 'real-estate/properties',
-      });
-      newImages.push({ url: result.secure_url, public_id: result.public_id });
-    }
-
-    property.images = newImages;
-  }
-
-  await property.save();
-  res.status(200).json(new ApiResponse(200, property, 'Property updated successfully'));
-});
 
 // ADD to Favourites
 export const addToFavourites = asyncHandler(async (req, res) => {
@@ -137,25 +84,29 @@ export const getUserFavourites = asyncHandler(async (req, res) => {
 
 // SEARCH Properties
 export const searchProperties = asyncHandler(async (req, res) => {
-  const { keyword, category, location } = req.query;
+  const { min, max } = req.body;
 
+  // Build a price-range query
+  const priceFilter = {};
+  if (min !== undefined) {
+    priceFilter.$gte = Number(min);
+  }
+  if (max !== undefined) {
+    priceFilter.$lte = Number(max);
+  }
+
+  // Only add the price field if at least one bound is present
   const query = {};
-
-  if (keyword) {
-    query.title = { $regex: keyword, $options: 'i' };
+  if (Object.keys(priceFilter).length) {
+    query.price = priceFilter;
   }
 
-  if (category) {
-    query.category = category;
-  }
+  // Fetch properties matching the price criteria
+  const properties = await Property.find(query).populate('createdBy', 'name email');
 
-  if (location) {
-    query.location = { $regex: location, $options: 'i' };
-  }
-
-  const results = await Property.find(query);
-  res.status(200).json(new ApiResponse(200, results, 'Search results'));
+  res.status(200).json(new ApiResponse(200, properties, 'Properties filtered by price range'));
 });
+
 
 // GET Properties Created by Logged-in User
 export const getMyProperties = asyncHandler(async (req, res) => {
