@@ -37,6 +37,7 @@ export const createProperty = asyncHandler(async (req, res) => {
     bathrooms,
     bedrooms,
     images,
+    sqft,
     createdBy: req.user._id,
   });
 

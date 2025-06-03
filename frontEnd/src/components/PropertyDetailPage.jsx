@@ -113,7 +113,7 @@ const handleAddToFavourites = async (propertyId) => {
                 <span className="text-lg">{property.sqft} sqft</span>
               </div>
 
-              <p className="text-gray-600">{property.description}</p>
+              <p className="text-gray-600">{property.title}</p>
 
               {/* Features */}
               <div className="border-t border-b border-gray-200 py-6">

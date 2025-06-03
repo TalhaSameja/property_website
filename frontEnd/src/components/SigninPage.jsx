@@ -125,7 +125,7 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Remember Me & Forgot Password */}
+            {/* Remember Me & Forgot Password
             <div className="flex items-center justify-between">
               
               <button
@@ -136,7 +136,7 @@ const handleSubmit = async (e) => {
               >
                 Forgot Password?
               </button>
-            </div>
+            </div> */}
 
             <button
               type="submit"
